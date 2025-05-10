@@ -1,4 +1,13 @@
 package com.WebApp.PokemonList.service;
 
-public class ListService {
+import com.WebApp.PokemonList.model.PokeList;
+
+import java.util.List;
+
+public interface ListService {
+    List<PokeList> findAll();
+    PokeList findById(Long id);
+    PokeList create(PokeList pokeList);
+    PokeList update(Long id, PokeList pokeList);
+    void delete(Long id);
 }
