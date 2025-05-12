@@ -1,5 +1,6 @@
 package com.WebApp.PokemonList.model;
 
+import com.fasterxml.jackson.annotation.JsonBackReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -22,6 +23,7 @@ public class PokemonEntry {
 
     private String spriteUrl;   // URL fetched from PokeAPI
 
+    @JsonBackReference
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "pokelist_id")
     private PokeList pokelist;

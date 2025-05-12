@@ -13,6 +13,7 @@ public interface PokeListRepository extends JpaRepository<PokeList,Long> {
      * Find a list by its exact name.
      */
     List<PokeList> findByName(String name);
+    boolean existsByNameIgnoreCase(String name);
 
 
 }

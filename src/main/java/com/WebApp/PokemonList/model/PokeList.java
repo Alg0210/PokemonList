@@ -1,5 +1,6 @@
 package com.WebApp.PokemonList.model;
 
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.*;
@@ -19,6 +20,7 @@ public class PokeList {
     @NotBlank(message = "List name must not be blank")
     private String name;
 
+    @JsonManagedReference
     @OneToMany(
             mappedBy = "pokelist",
             cascade = CascadeType.ALL,

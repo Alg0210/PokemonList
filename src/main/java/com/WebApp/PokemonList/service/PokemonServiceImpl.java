@@ -6,7 +6,9 @@ import com.WebApp.PokemonList.model.PokemonEntry;
 import com.WebApp.PokemonList.repository.PokeListRepository;
 import com.WebApp.PokemonList.repository.PokemonEntryRepository;
 import com.WebApp.PokemonList.service.external.PokeApiService;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -32,15 +34,26 @@ public class PokemonServiceImpl implements PokemonService{
     }
 
     @Override
-    public PokemonEntry findById(Long id) {
-        return entryRepository.findById(id)
-                .orElseThrow(() -> new NotFoundException("Pokemon entry not found with id " + id));
+    public PokemonEntry findById(Long listId, Long entryId) {
+        return entryRepository.findByIdAndPokelistId(listId,entryId)
+                .orElseThrow(() -> new NotFoundException("Pokemon entry not found with id " + entryId + " in list " + listId));
     }
 
     @Override
     public PokemonEntry addToList(Long listId, String species, String nickname) {
         PokeList list = listRepository.findById(listId)
                 .orElseThrow(() -> new NotFoundException("Pokelist not found with id" + listId));
+
+
+        boolean exists = entryRepository.findByPokelistId(listId)
+                .stream()
+                .anyMatch(e -> e.getSpecies().equalsIgnoreCase(species));
+        if (exists) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Species '" + species + "' already exists in list id " + listId
+            );
+        }
 
         String sprite = pokeApiService.getSpriteUrl(species);
         PokemonEntry entry = PokemonEntry.builder()
@@ -54,8 +67,8 @@ public class PokemonServiceImpl implements PokemonService{
     }
 
     @Override
-    public PokemonEntry update(Long id, String species, String nickname) {
-        PokemonEntry entry = findById(id);
+    public PokemonEntry updatePoke(Long listId, Long entryId, String species, String nickname) {
+        PokemonEntry entry = findById(listId, entryId);
 
         if (!entry.getSpecies().equalsIgnoreCase(species)) {
             entry.setSpecies(species);
@@ -66,10 +79,13 @@ public class PokemonServiceImpl implements PokemonService{
     }
 
     @Override
-    public void delete(Long id) {
-        if (!entryRepository.existsById(id)) {
-            throw new NotFoundException("Cannot delete; entry not found with id " + id);
-        }
-        entryRepository.deleteById(id);
+    public void deletePoke(Long listId, Long entryId) {
+        PokemonEntry entry = entryRepository
+                .findByIdAndPokelistId(entryId, listId)
+                .orElseThrow(() -> new NotFoundException(
+                        "No Pokemon entry with id " + entryId +
+                                " in list " + listId));
+
+        entryRepository.delete(entry);
     }
 }

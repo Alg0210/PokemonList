@@ -4,7 +4,9 @@ package com.WebApp.PokemonList.service;
 import com.WebApp.PokemonList.exception.NotFoundException;
 import com.WebApp.PokemonList.model.PokeList;
 import com.WebApp.PokemonList.repository.PokeListRepository;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
+import org.springframework.web.server.ResponseStatusException;
 
 import java.util.List;
 
@@ -32,6 +34,13 @@ public class ListServiceImpl implements ListService {
 
     @Override
     public PokeList create(PokeList pokeList) {
+
+        if (repository.existsByNameIgnoreCase(pokeList.getName())) {
+            throw new ResponseStatusException(
+                    HttpStatus.BAD_REQUEST,
+                    "Pokelist with name '" + pokeList.getName() + "' already exists"
+            );
+        }
         return repository.save(pokeList);
     }
 
