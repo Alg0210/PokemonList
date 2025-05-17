@@ -47,6 +47,10 @@ public class ListServiceImpl implements ListService {
     @Override
     public PokeList update(Long id, PokeList updated) {
         PokeList existing = findById(id);
+
+        if(repository.existsByNameIgnoreCase(updated.getName()) && !updated.getName().equalsIgnoreCase(existing.getName())) {
+            throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Pokelist with this name already exists");
+        }
         existing.setName(updated.getName());
         return repository.save(existing);
     }

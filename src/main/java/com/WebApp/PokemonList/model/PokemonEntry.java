@@ -16,7 +16,6 @@ public class PokemonEntry {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "Pokemon species must not be blank")
     private String species;
 
     private String nickname;

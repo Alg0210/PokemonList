@@ -17,7 +17,6 @@ public class PokeList {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @NotBlank(message = "List name must not be blank")
     private String name;
 
     @JsonManagedReference
