@@ -35,7 +35,7 @@ public class PokemonServiceImpl implements PokemonService{
 
     @Override
     public PokemonEntry findById(Long listId, Long entryId) {
-        return entryRepository.findByIdAndPokelistId(listId,entryId)
+        return entryRepository.findByIdAndPokelistId(entryId, listId)
                 .orElseThrow(() -> new NotFoundException("Pokemon entry not found with id " + entryId + " in list " + listId));
     }
 
@@ -71,6 +71,16 @@ public class PokemonServiceImpl implements PokemonService{
         PokemonEntry entry = findById(listId, entryId);
 
         if (!entry.getSpecies().equalsIgnoreCase(species)) {
+            boolean exists = entryRepository.findByPokelistId(listId)
+                    .stream()
+                    .anyMatch(e -> !e.getId().equals(entryId) && e.getSpecies().equalsIgnoreCase(species));
+            if (exists) {
+                throw new ResponseStatusException(
+                        HttpStatus.BAD_REQUEST,
+                        "Species '" + species + "' already exists in list id " + listId
+                );
+            }
+
             entry.setSpecies(species);
             entry.setSpriteUrl(pokeApiService.getSpriteUrl(species));
         }

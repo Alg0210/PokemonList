@@ -15,7 +15,6 @@ import java.util.stream.Collectors;
 
 @RestController
 @RequestMapping("/api/pokelists")
-@CrossOrigin(origins = "http://localhost:5173")
 public class PokeListController {
 
     private final ListService pokeListService;
